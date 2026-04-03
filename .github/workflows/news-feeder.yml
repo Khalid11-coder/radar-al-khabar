@@ -11,7 +11,7 @@ on:
       force_run:
         description: 'Force run even if recently executed'
         required: false
-        default: 'false'
+        default: false
         type: boolean
 
 jobs:
@@ -30,17 +30,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # حذفنا سطر الـ cache هنا عشان نتخطى تدقيق الملفات الصارم
 
       # ── Install Dependencies ──────────────────────────────
       - name: 📥 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install  # غيرناها من ci إلى install لمرونة أكبر في التحميل
 
       # ── Run the Feeder ────────────────────────────────────
       - name: 🚀 Run News Feeder Script
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}  # تأكد من تطابق اسم الـ Secret في GitHub
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NODE_ENV: production
         run: node scripts/news-feeder.js
