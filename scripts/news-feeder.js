@@ -126,7 +126,7 @@ async function upsertNewsItems(supabase, items) {
       // Check for existing source_links (deduplication)
       const links = batch.map((item) => item.source_link)
       const { data: existing } = await supabase
-        .from('news_radar')
+        .from('radar-al-khabar')
         .select('source_link')
         .in('source_link', links)
 
@@ -137,7 +137,7 @@ async function upsertNewsItems(supabase, items) {
 
       if (newItems.length > 0) {
         const { data, error } = await supabase
-          .from('news_radar')
+          .from('radar-al-khabar')
           .insert(newItems)
           .select('id')
 
@@ -165,7 +165,7 @@ async function markFeaturedItems(supabase) {
   try {
     // Get latest 3 high-quality items to mark as featured
     const { data: recent } = await supabase
-      .from('news_radar')
+      .from('radar-al-khabar')
       .select('id')
       .not('image_url', 'is', null)
       .order('published_at', { ascending: false })

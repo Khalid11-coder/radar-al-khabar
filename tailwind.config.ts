@@ -29,7 +29,7 @@ const config: Config = {
         arabic: ['Cairo', 'Almarai', 'sans-serif'],
       },
       animation: {
-        ticker: 'ticker 40s linear infinite',
+        ticker: 'ticker 300s linear infinite',
         'fade-in': 'fadeIn 0.6s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   try {
     // Try Supabase first
     let query = supabase
-      .from('news_radar')
+      .from('radar-al-khabar')
       .select('*')
       .order('published_at', { ascending: false })
       .range((page - 1) * limit, page * limit - 1)

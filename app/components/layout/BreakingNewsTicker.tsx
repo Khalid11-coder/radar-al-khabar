@@ -28,29 +28,31 @@ export default function BreakingNewsTicker({ items = DEFAULT_ITEMS }: BreakingNe
   const displayItems = items.length > 0 ? items : DEFAULT_ITEMS
 
   return (
-    <div className="bg-gradient-to-l from-[#0f172a] via-[#1a0a0a] to-[#0f172a] border-b border-red-900/30 overflow-hidden">
-      <div className="flex items-stretch">
-        {/* URGENT Badge */}
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-red-600 shrink-0 z-10">
+    <div className="bg-[#0f172a] border-b border-red-900/20 overflow-hidden h-9 flex items-center">
+      {/* تم استخدام items-center لضمان المحاذاة الأفقية مع الهيدر */}
+      <div className="flex items-center h-full w-full">
+        {/* URGENT Badge - تم تعديله ليكون متسقاً مع ارتفاع h-9 */}
+        <div className="flex items-center gap-2 px-4 h-full bg-red-600 shrink-0 z-10">
           <Zap size={14} className="text-white badge-urgent" />
           <span className="text-white font-bold text-xs tracking-wider whitespace-nowrap">عـاجـل</span>
         </div>
 
         {/* Divider */}
-        <div className="w-px bg-red-700/50 self-stretch" />
+        <div className="w-px bg-red-700/50 h-full" />
 
-        {/* Scrolling Content */}
+        {/* Scrolling Content - أضفنا h-full و items-center لضمان الاستقامة */}
         <div
-          className="flex-1 overflow-hidden relative"
+          className="flex-1 overflow-hidden relative h-full flex items-center"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div
-            className="ticker-content py-2.5"
+          <div 
+            className="ticker-content flex items-center h-full py-0" 
             style={{ animationPlayState: isPaused ? 'paused' : 'running' }}
           >
-            {[...displayItems, ...displayItems].map((item, i) => (
-              <span key={`${item.id}-${i}`} className="flex items-center gap-3 cursor-pointer group">
+            {/* تكرار المصفوفة 4 مرات يضمن عدم اختفاء الشريط أو ظهور فراغ أسود */}
+            {[...displayItems, ...displayItems, ...displayItems, ...displayItems].map((item, i) => (
+              <span key={`${item.id}-${i}`} className="flex items-center gap-3 cursor-pointer group px-4 whitespace-nowrap">
                 {item.category && (
                   <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-semibold border border-emerald-500/30 whitespace-nowrap">
                     {item.category}

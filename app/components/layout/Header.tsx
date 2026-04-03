@@ -18,6 +18,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentTime, setCurrentTime] = useState('')
+  const [currentDate, setCurrentDate] = useState('')
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -26,14 +27,24 @@ export default function Header() {
   }, [])
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString('ar-SA', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }))
-    }
+  const updateTime = () => {
+    const now = new Date();
+    
+    // تحديث الوقت بالثانية والدقيقة
+    setCurrentTime(now.toLocaleTimeString('ar-SA', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }));
+
+    // تحديث التاريخ ليصبح "الجمعة، 3 أبريل 2026"
+    setCurrentDate(now.toLocaleDateString('ar-SA', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }));
+  };
     updateTime()
     const interval = setInterval(updateTime, 60000)
     return () => clearInterval(interval)
@@ -49,7 +60,7 @@ export default function Header() {
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse inline-block" />
               بث مباشر
             </span>
-            <span className="hidden sm:block">الأربعاء، 2 أبريل 2026</span>
+            <span className="hidden sm:block">{currentDate}</span>
           </div>
           <div className="flex items-center gap-3">
             <Globe size={12} className="text-emerald-400" />
