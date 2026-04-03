@@ -2,8 +2,7 @@ name: 🗞️ Radar Al-Khabar — News Auto-Feeder
 
 on:
   schedule:
-    # يعمل كل 30 دقيقة آلياً
-    - cron: '*/30 * * * *'
+    - cron: '0 0 * * *'  # سيتم التشغيل مرة واحدة يومياً عند منتصف الليل
   
   # يسمح لك بتشغيله يدوياً من صفحة Actions
   workflow_dispatch:
