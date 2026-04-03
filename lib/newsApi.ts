@@ -1,85 +1,62 @@
 import axios from 'axios'
 
-const NEWS_API_KEY = process.env.NEWS_API_KEY || process.env.NEXT_PUBLIC_NEWS_API_KEY || 'eea864e38578439fba48f9fc239598ea'
-const BASE_URL = 'https://newsapi.org/v2'
+// حذف المفتاح العام والاعتماد كلياً على متغيرات البيئة للأمان
+const NEWS_API_KEY = process.env.NEWS_API_KEY || process.env.NEXT_PUBLIC_NEWS_API_KEY
+const BASE_URL = 'https://serpapi.com/search.json'
 
+// تحديث الواجهة لتناسب بيانات SerpApi (Google News)
 export interface NewsAPIArticle {
-  source: { id: string | null; name: string }
-  author: string | null
+  source: string | { name: string }
   title: string
-  description: string | null
-  url: string
-  urlToImage: string | null
-  publishedAt: string
-  content: string | null
+  link: string        // SerpApi يستخدم link بدل url
+  thumbnail: string | null // SerpApi يستخدم thumbnail بدل urlToImage
+  date: string        // SerpApi يستخدم date بدل publishedAt
+  snippet: string | null // SerpApi يستخدم snippet بدل description
 }
 
-export interface NewsAPIResponse {
-  status: string
-  totalResults: number
-  articles: NewsAPIArticle[]
+// واجهة الرد الخاصة بـ SerpApi
+export interface SerpApiResponse {
+  news_results: NewsAPIArticle[]
+  search_metadata: {
+    status: string
+  }
 }
 
 export async function fetchArabicNews(
   query: string = 'أخبار عربية',
-  pageSize: number = 20,
-  page: number = 1
+  num: number = 20
 ): Promise<NewsAPIArticle[]> {
   try {
-    const response = await axios.get<NewsAPIResponse>(`${BASE_URL}/everything`, {
+    const response = await axios.get<SerpApiResponse>(BASE_URL, {
       params: {
+        engine: 'google_news', // محرك البحث المطلوب
         q: query,
-        language: 'ar',
-        sortBy: 'publishedAt',
-        pageSize,
-        page,
-        apiKey: NEWS_API_KEY,
+        gl: 'sa',              // الموقع: السعودية
+        hl: 'ar',              // اللغة: العربية
+        api_key: NEWS_API_KEY, // المفتاح الجديد الخاص بك
       },
       timeout: 10000,
     })
 
-    if (response.data.status === 'ok') {
-      return response.data.articles.filter(
-        (article) =>
-          article.title &&
-          article.title !== '[Removed]' &&
-          article.url &&
-          !article.url.includes('removed')
-      )
+    // التأكد من وجود نتائج وتحويلها
+    if (response.data && response.data.news_results) {
+      return response.data.news_results
     }
     return []
   } catch (error) {
-    console.error('NewsAPI fetch error:', error)
+    console.error('SerpApi fetch error:', error)
     return []
   }
 }
 
+/**
+ * ملاحظة لـ خالد: SerpApi في محرك google_news لا يستخدم endpoint منفصل لـ top-headlines
+ * بل يتم التحكم بذلك عبر كلمات البحث (Query)
+ */
 export async function fetchTopHeadlines(
-  country: string = 'ae',
-  category?: string,
-  pageSize: number = 20
+  category: string = 'أهم الأخبار',
+  num: number = 20
 ): Promise<NewsAPIArticle[]> {
-  try {
-    const params: Record<string, string | number> = {
-      country,
-      pageSize,
-      apiKey: NEWS_API_KEY,
-    }
-    if (category) params.category = category
-
-    const response = await axios.get<NewsAPIResponse>(`${BASE_URL}/top-headlines`, {
-      params,
-      timeout: 10000,
-    })
-
-    if (response.data.status === 'ok') {
-      return response.data.articles.filter(
-        (a) => a.title && a.title !== '[Removed]'
-      )
-    }
-    return []
-  } catch (error) {
-    console.error('NewsAPI top-headlines error:', error)
-    return []
-  }
+  // نستخدم نفس الدالة السابقة مع تغيير كلمة البحث لتجلب العناوين الرئيسية
+  return fetchArabicNews(category, num)
 }
