@@ -2,10 +2,10 @@ name: 🗞️ Radar Al-Khabar — News Auto-Feeder
 
 on:
   schedule:
-    # Runs every 30 minutes, 24/7
+    # يعمل كل 30 دقيقة آلياً
     - cron: '*/30 * * * *'
   
-  # Allow manual trigger from GitHub UI
+  # يسمح لك بتشغيله يدوياً من صفحة Actions
   workflow_dispatch:
     inputs:
       force_run:
@@ -21,38 +21,38 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      # ── Checkout ──────────────────────────────────────────
+      # ── سحب الكود من GitHub ──────────────────────────────────
       - name: 📦 Checkout Repository
         uses: actions/checkout@v4
 
-      # ── Setup Node.js ─────────────────────────────────────
+      # ── إعداد بيئة Node.js ─────────────────────────────────────
       - name: ⚙️ Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # حذفنا سطر الـ cache هنا عشان نتخطى تدقيق الملفات الصارم
+          # تم حذف سطر الـ cache نهائياً لتجنب أخطاء التدقيق الصارمة
 
-      # ── Install Dependencies ──────────────────────────────
+      # ── تثبيت المكتبات البرمجية ──────────────────────────────
       - name: 📥 Install Dependencies
-        run: npm install  # غيرناها من ci إلى install لمرونة أكبر في التحميل
+        run: npm install  # استخدام install بدلاً من ci للمرونة القصوى
 
-      # ── Run the Feeder ────────────────────────────────────
+      # ── تشغيل سكربت الرادار ────────────────────────────────────
       - name: 🚀 Run News Feeder Script
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}  # تأكد من تطابق اسم الـ Secret في GitHub
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NODE_ENV: production
         run: node scripts/news-feeder.js
 
-      # ── Log Success ───────────────────────────────────────
+      # ── تسجيل النجاح ───────────────────────────────────────
       - name: ✅ Log Completion Time
         if: success()
         run: |
           echo "✅ News feed completed successfully at $(date -u '+%Y-%m-%d %H:%M UTC')"
           echo "Next run: in ~30 minutes"
 
-      # ── Notify on Failure ─────────────────────────────────
+      # ── التنبيه في حالة الفشل ─────────────────────────────────
       - name: ❌ Log Failure
         if: failure()
         run: |
