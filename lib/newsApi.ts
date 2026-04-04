@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // حذف المفتاح العام والاعتماد كلياً على متغيرات البيئة للأمان
-const NEWS_API_KEY = 'b2490bd37890d573cf4336de59aa63094a1b4f1f84d92f5a3333b23a0076b0e9'
+const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY;
 const BASE_URL = 'https://serpapi.com/search.json'
 
 // تحديث الواجهة لتناسب بيانات SerpApi (Google News)
