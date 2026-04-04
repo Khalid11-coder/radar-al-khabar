@@ -113,7 +113,7 @@ async function upsertNewsItems(supabase, items) {
     try {
       const links = batch.map((item) => item.source_link)
       const { data: existing } = await supabase
-        .from('radar-al-khabar')
+        .from('news_radar')
         .select('source_link')
         .in('source_link', links)
 
@@ -124,7 +124,7 @@ async function upsertNewsItems(supabase, items) {
 
       if (newItems.length > 0) {
         const { data, error } = await supabase
-          .from('radar-al-khabar')
+          .from('news_radar')
           .insert(newItems)
           .select('id')
 
