@@ -10,15 +10,15 @@ export const revalidate = 1800 // 30 min ISR
 
 function normalizeArticle(a: NewsAPIArticle, category: string, index: number) {
   return {
-    id: `${category}-${index}-${a.url?.slice(-10) || index}`,
+    id: `${category}-${index}-${a.link?.slice(-10) || index}`,
     title: a.title,
-    summary: a.description,
-    content: a.content,
-    image_url: a.urlToImage,
-    source_name: a.source?.name || 'رادار الخبر',
-    source_link: a.url,
+    summary: a.snippet,
+    content: a.snippet,
+    image_url: a.thumbnail,
+    source_name: typeof a.source === 'string' ? a.source : (a.source?.name || 'رادار الخبر'),
+    source_link: a.link,
     category,
-    published_at: a.publishedAt,
+    published_at: a.date,
     created_at: new Date().toISOString(),
     views: Math.floor(Math.random() * 12000) + 200,
     is_featured: index < 2,

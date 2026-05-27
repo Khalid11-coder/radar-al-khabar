@@ -18,41 +18,44 @@ export async function GET(request: NextRequest) {
       .from('news_radar')
       .select('*')
       .order('published_at', { ascending: false })
-      .range((page - 1) * limit, page * limit - 1)
 
     // فلترة الأقسام (لو كانت الرئيسية، لا تفلتر)
     if (category && category !== 'الرئيسية') {
       query = query.eq('category', category)
     }
+    
     if (featured) query = query.eq('is_featured', true)
     if (breaking) query = query.eq('is_breaking', true)
 
+    // تطبيق الـ Range بعد الفلترة
+    query = query.range((page - 1) * limit, page * limit - 1)
+
     const { data, error } = await query
 
-    // إذا فيه بيانات في سوبابيس (326 خبر)، بترجع فوراً للموقع
+    // إذا فيه بيانات في سوبابيس، بترجع فوراً للموقع
     if (!error && data && data.length > 0) {
       return NextResponse.json({ success: true, data, source: 'supabase' })
     }
 
     // 2. الخطة البديلة: السحب المباشر من SerpApi لو سوبابيس فاضي
-    const queryStr = category && category !== 'الرئيسية' ? `${category} أخبار` : 'أخبار عربية'
+    const queryStr = category && category !== 'الرئيسية' ? `${category} أخبار عربية` : 'أخبار عربية'
     const articles = await fetchArabicNews(queryStr, limit)
 
-    // تصحيح الـ Mapping ليتناسب مع SerpApi الجديد
-    const normalized = articles.map((a, i) => ({
+    // تحويل البيانات لتناسب الواجهة وتدعم الصور والروابط
+    const normalized = articles.map((a: any, i: number) => ({
       id: `serpapi-${i}-${Date.now()}`,
       title: a.title,
-      summary: a.snippet || '',               // SerpApi يستخدم snippet بدل description
+      summary: a.snippet || '',               // SerpApi يستخدم snippet
+      description: a.snippet || '',           // دعم المكونات القديمة
       content: a.snippet || '', 
-      image_url: a.thumbnail || '',           // SerpApi يستخدم thumbnail بدل urlToImage
+      image_url: a.thumbnail || null,         // SerpApi يستخدم thumbnail
+      urlToImage: a.thumbnail || null,        // دعم الصور في NewsCard
       source_name: typeof a.source === 'string' ? a.source : (a.source?.name || 'مصدر'),
-      source_link: a.link,                    // SerpApi يستخدم link بدل url
+      source_link: a.link,                    // SerpApi يستخدم link
+      url: a.link,                            // دعم الرابط في NewsCard
       category: category || 'عام',
-      published_at: a.date || new Date().toISOString(), // SerpApi يستخدم date بدل publishedAt
-      created_at: new Date().toISOString(),
-      views: 0,
-      is_featured: i < 3,
-      is_breaking: false,
+      published_at: a.date || new Date().toISOString(),
+      publishedAt: a.date || new Date().toISOString(),
       language: 'ar',
     }))
 

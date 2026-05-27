@@ -98,8 +98,8 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-# NewsAPI (مُرفق مسبقاً)
-NEWS_API_KEY=eea864e38578439fba48f9fc239598ea
+# NewsAPI
+NEWS_API_KEY=your_api_key_here
 ```
 
 ### 4️⃣ تشغيل المشروع
